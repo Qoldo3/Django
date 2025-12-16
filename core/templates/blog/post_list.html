@@ -15,7 +15,7 @@
                     {{ post.id }} {{ post.title }}
                 </a>
             </h2>
-            <small>{{ post.author }} - {{ post.published_date }}</small>
+            <small>{{ post.author }} - {{post.author.first_name}} - {{ post.published_date }}</small>
             <a href="{% url 'blog:Edit-Post' pk=post.id %}">Edit</a>
             <a href="{% url 'blog:Delete-Post' pk=post.id %}">Delete</a>
             <hr>
