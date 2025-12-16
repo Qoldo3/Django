@@ -2,19 +2,21 @@ from .serializers import PostSerializer, CategorySerializer
 from blog.models import Post, Category
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework import viewsets
-from rest_framework.decorators import action
-from rest_framework.response import Response
+from .permissions import IsAuthorOrReadOnly
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
+from .paginations import LargeResultsSetPagination
 
 class PostViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    pagination_class = LargeResultsSetPagination
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
     serializer_class = PostSerializer
     queryset = Post.objects.filter(status = True).order_by('id')
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['category', 'author', 'status', ]
+    search_fields = ['title', 'content']
+    ordering_fields = ['created_date', 'updated_date']
 
-    @action(detail=False, methods=['get'])
-    def recent(self, request):
-        recent_posts = Post.objects.filter(status=True).order_by('-published_date')[:5]
-        serializer = self.get_serializer(recent_posts, many=True)
-        return Response(serializer.data)
 
 class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
