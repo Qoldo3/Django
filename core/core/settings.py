@@ -38,7 +38,11 @@ INSTALLED_APPS = [
     'accounts',
     'blog',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_filters',
+    'drf_yasg',
+    'rest_framework_simplejwt',
+    'mail_templated',
 ]
 
 MIDDLEWARE = [
@@ -137,4 +141,35 @@ AUTH_USER_MODEL = 'accounts.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
 }
+# Email Settings
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# MailTrap Token
+MailTrapToken = 'e44a627dd80d6c5e739458fdb7b409ea'
+
+# SMTP Configuration
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+# SMTP For Mailtrap
+# EMAIL_HOST = "sandbox.smtp.mailtrap.io"
+# EMAIL_HOST_USER = "cee2bd7924b47a"
+# EMAIL_HOST_PASSWORD = ""
+# EMAIL_PORT = 2525
+# EMAIL_USE_TLS = False
+# DEFAULT_FROM_EMAIL = "noreply@Qoldo.com"
+
+# SMTP For Localhost Testing
+EMAIL_USE_TLS = False
+EMAIL_HOST = 'smtp4dev'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+DEFAULT_FROM_EMAIL = "noreply@Qoldo.com"

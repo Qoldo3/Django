@@ -8,6 +8,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from .paginations import LargeResultsSetPagination
 
 class PostViewSet(viewsets.ModelViewSet):
+    # Post ViewSet with filtering, searching, ordering, and pagination
     pagination_class = LargeResultsSetPagination
     permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
     serializer_class = PostSerializer
@@ -19,6 +20,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
+    # Category ViewSet with read-only permission for unauthenticated users
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = CategorySerializer
     queryset = Category.objects.all()

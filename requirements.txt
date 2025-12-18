@@ -1,6 +1,15 @@
+# Requirements for the project
 django 
 python-decouple
 Pillow
 djangorestframework
+
+# third-party packages
 markdown
 django-filter
+djangorestframework-simplejwt
+mail-templated
+# Requirements for documentation
+yasg[validation]
+
+# Requirements for Deployment

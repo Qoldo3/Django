@@ -1,5 +1,5 @@
 from django.contrib import admin
-from blog.models import *
+from blog.models import Category, Post
 
 class PostAdmin(admin.ModelAdmin):
     list_display = ['author', 'title', 'status', 'category', 'created_date', ' published_date']
