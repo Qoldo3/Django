@@ -11,14 +11,11 @@ from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
-from accounts.models import Profile
+from accounts.models import Profile, EmailVerificationToken, PasswordResetToken
 from django.shortcuts import get_object_or_404
 from mail_templated import EmailMessage
 from .utils import EmailThread
-import jwt
-from django.conf import settings
 
 
 
@@ -29,7 +26,8 @@ class RegisterView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            user = serializer.save()
+            verification_token = EmailVerificationToken.create_token(user)
             email = serializer.validated_data['email']
             data = {
                 'email': email,
@@ -37,19 +35,15 @@ class RegisterView(generics.CreateAPIView):
             user_obj = get_object_or_404(get_user_model(), email=email)
             token = self.get_tokens_for_user(user_obj)
 
-            email_obj = EmailMessage('email/Activation.tpl', {'token': token}, 
+            email_obj = EmailMessage('email/Activation.tpl', {'token': verification_token.token}, 
                                 'noreply@qoldo.com', to = [email])
             EmailThread(email_obj).start()
             return Response({"message": "User registered successfully", 'Email': serializer.data['email']}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    def get_tokens_for_user(self, user):
-        refresh = RefreshToken.for_user(user)
-        return str(refresh.access_token)
 
 class CurstomToken(ObtainAuthToken):
-    # Custon Token View to return user data along with token
     serializer_class = CustomTokenSerializer
+    
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
@@ -73,8 +67,7 @@ class ChangePasswordApiView(generics.GenericAPIView):
     serializer_class = ChangePasswordSerializer
 
     def get_object(self, queryset=None):
-        obj = self.request.user
-        return obj
+        return self.request.user
 
     def put(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -116,26 +109,39 @@ class TestEmailView(generics.GenericAPIView):
                                'noreply@qoldo.com', to = ['kazem@admin.com'])
         EmailThread(email_obj).start()
         return Response({"message": "Test email sent."}, status=status.HTTP_200_OK)
-    
-    def get_tokens_for_user(self, user):
-        refresh = RefreshToken.for_user(user)
-        return str(refresh.access_token)
 
 class ActivateAccountView(APIView):
     def get(self, request, token, *args, **kwargs):
         #decode JWT token to get user ID and activate account
         try:
-            token = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-        except jwt.ExpiredSignatureError:
+            verification_token = EmailVerificationToken.objects.get(token=token)
+        except EmailVerificationToken.DoesNotExist:
             return Response({"error": "Activation link has expired."}, status=status.HTTP_400_BAD_REQUEST)
-        except jwt.InvalidTokenError:
-            return Response({"error": "Invalid token."}, status=status.HTTP_400_BAD_REQUEST)
-        user_obj = get_user_model().objects.get(id=token['user_id'])
-        if  user_obj.is_verified:
-            return Response({"message": "Account is already activated."}, status=status.HTTP_200_OK)
-        user_obj.is_verified = True
-        user_obj.save()
-        return Response({"message": "Account activated successfully."}, status=status.HTTP_200_OK)
+        if not verification_token.is_valid():
+            if verification_token.used:
+                return Response(
+                        {"error": "This activation link has already been used."}, 
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+            else:
+                return Response(
+                    {"error": "Activation link has expired."}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        user = verification_token.user
+        if user.is_verified:
+            return Response(
+                {"message": "Account is already activated."}, 
+                status=status.HTTP_200_OK
+            )
+        user.is_verified = True
+        user.save()
+        verification_token.mark_as_used()
+        
+        return Response(
+            {"message": "Account activated successfully."}, 
+            status=status.HTTP_200_OK
+        )
         
 class ResendActivationEmailView(generics.GenericAPIView):
     serializer_class = ResendActivationEmailSerializer
@@ -143,48 +149,66 @@ class ResendActivationEmailView(generics.GenericAPIView):
             serializer = self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)
             user_obj = serializer.validated_data['user'] 
-            token = self.get_tokens_for_user(user_obj)
-            email_obj = EmailMessage('email/Activation.tpl', {'token': token}, 
-                            'noreply@qoldo.com', to = [user_obj.email])
+            verification_token = EmailVerificationToken.create_token(user_obj)
+            email_obj = EmailMessage(
+            'email/Activation.tpl', 
+            {'token': verification_token.token}, 
+            'noreply@qoldo.com', 
+            to=[user_obj.email]
+        )
             EmailThread(email_obj).start()
             return Response({"message": "If the email exists, an email has been sent.."}, status=status.HTTP_200_OK)
 
-        
-    def get_tokens_for_user(self, user):
-        refresh = RefreshToken.for_user(user)
-        return str(refresh.access_token)
 
 class ResetPasswordView(generics.GenericAPIView):
     serializer_class = ResetPasswordSerializer
     def post(self, request, *args, **kwargs):
-            serializer = self.serializer_class(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            user_obj = serializer.validated_data['user'] 
-            token = self.get_tokens_for_user(user_obj)
-            email_obj = EmailMessage('email/ResetPass.tpl', {'token': token}, 
-                            'noreply@qoldo.com', to = [user_obj.email])
-            EmailThread(email_obj).start()
-            return Response({"message": "Reset password email resent."}, status=status.HTTP_200_OK)
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user_obj = serializer.validated_data['user'] 
+        reset_token = PasswordResetToken.create_token(user_obj)
+        email_obj = EmailMessage(
+            'email/ResetPass.tpl', 
+            {'token': reset_token.token}, 
+            'noreply@qoldo.com', 
+            to=[user_obj.email]
+        )
+        EmailThread(email_obj).start()
+        
+        return Response(
+            {"message": "Password reset email sent."}, 
+            status=status.HTTP_200_OK
+        )
 
         
-    def get_tokens_for_user(self, user):
-        refresh = RefreshToken.for_user(user)
-        return str(refresh.access_token)
-
 class ResetPasswordConfirmView(generics.GenericAPIView):
     serializer_class = ResetPasswordSerializerConfirm
     def post(self, request, token, *args, **kwargs):
         #decode JWT token to get user ID and reset password
         try:
-            token = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-        except jwt.ExpiredSignatureError:
-            return Response({"error": "Password reset link has expired."}, status=status.HTTP_400_BAD_REQUEST)
-        except jwt.InvalidTokenError:
-            return Response({"error": "Invalid token."}, status=status.HTTP_400_BAD_REQUEST)
-        user_obj = get_user_model().objects.get(id=token['user_id'])
+            reset_token = PasswordResetToken.objects.get(token=token)
+        except PasswordResetToken.DoesNotExist:
+            return Response(
+                {"error": "Invalid password reset token."}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        if not reset_token.is_valid():
+            if reset_token.used:
+                return Response(
+                    {"error": "This password reset link has already been used."}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            else:
+                return Response(
+                    {"error": "Password reset link has expired."}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        user_obj = reset_token.user
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             user_obj.set_password(serializer.data.get("new_password"))
             user_obj.save()
+            reset_token.mark_as_used()
             return Response({"message": "Password reset successfully."}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
