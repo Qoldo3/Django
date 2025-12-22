@@ -1,6 +1,6 @@
 from django.urls import path, include
 
 urlpatterns = [
-    path('', include('accounts.api.v1.urls.Accounts')),
-    path('profile/', include('accounts.api.v1.urls.Profile')),
+    path("", include("accounts.api.v1.urls.Accounts")),
+    path("profile/", include("accounts.api.v1.urls.Profile")),
 ]

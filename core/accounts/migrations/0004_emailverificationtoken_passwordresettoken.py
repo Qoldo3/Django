@@ -8,38 +8,74 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0003_user_is_verified'),
+        ("accounts", "0003_user_is_verified"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='EmailVerificationToken',
+            name="EmailVerificationToken",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('token', models.CharField(db_index=True, max_length=64, unique=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('expires_at', models.DateTimeField()),
-                ('used', models.BooleanField(default=False)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("token", models.CharField(db_index=True, max_length=64, unique=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("expires_at", models.DateTimeField()),
+                ("used", models.BooleanField(default=False)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'db_table': 'email_verification_tokens',
-                'indexes': [models.Index(fields=['token', 'used'], name='email_verif_token_259a86_idx')],
+                "db_table": "email_verification_tokens",
+                "indexes": [
+                    models.Index(
+                        fields=["token", "used"], name="email_verif_token_259a86_idx"
+                    )
+                ],
             },
         ),
         migrations.CreateModel(
-            name='PasswordResetToken',
+            name="PasswordResetToken",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('token', models.CharField(db_index=True, max_length=64, unique=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('expires_at', models.DateTimeField()),
-                ('used', models.BooleanField(default=False)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("token", models.CharField(db_index=True, max_length=64, unique=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("expires_at", models.DateTimeField()),
+                ("used", models.BooleanField(default=False)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'db_table': 'password_reset_tokens',
-                'indexes': [models.Index(fields=['token', 'used'], name='password_re_token_69d40c_idx')],
+                "db_table": "password_reset_tokens",
+                "indexes": [
+                    models.Index(
+                        fields=["token", "used"], name="password_re_token_69d40c_idx"
+                    )
+                ],
             },
         ),
     ]
