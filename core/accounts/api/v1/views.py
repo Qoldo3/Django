@@ -38,7 +38,6 @@ class RegisterView(generics.CreateAPIView):
                 "email": email,
             }
             user_obj = get_object_or_404(get_user_model(), email=email)
-            token = self.get_tokens_for_user(user_obj)
 
             email_obj = EmailMessage(
                 "email/Activation.tpl",
@@ -57,7 +56,7 @@ class RegisterView(generics.CreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CurstomToken(ObtainAuthToken):
+class CustomToken(ObtainAuthToken):
     serializer_class = CustomTokenSerializer
 
     def post(self, request, *args, **kwargs):
@@ -123,22 +122,6 @@ class ProfileView(generics.RetrieveUpdateAPIView):
         queryset = self.get_queryset()
         obj = get_object_or_404(queryset, user=self.request.user)
         return obj
-
-
-class TestEmailView(generics.GenericAPIView):
-    def get(self, request, *args, **kwargs):
-        self.email = "admin@admin.com"
-        user_obj = get_object_or_404(get_user_model(), email=self.email)
-        token = self.get_tokens_for_user(user_obj)
-
-        email_obj = EmailMessage(
-            "email/hello.tpl",
-            {"token": token},
-            "noreply@qoldo.com",
-            to=["kazem@admin.com"],
-        )
-        EmailThread(email_obj).start()
-        return Response({"message": "Test email sent."}, status=status.HTTP_200_OK)
 
 
 class ActivateAccountView(APIView):
@@ -252,3 +235,7 @@ class ResetPasswordConfirmView(generics.GenericAPIView):
                 {"message": "Password reset successfully."}, status=status.HTTP_200_OK
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+def test(x, y, z):
+    return x + y + z

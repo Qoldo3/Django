@@ -9,10 +9,9 @@ from rest_framework_simplejwt.views import (
 urlpatterns = [
     # register API
     path("register/", views.RegisterView.as_view(), name="register"),
-    path("token/login/", views.CurstomToken.as_view(), name="token-login"),
+    path("token/login/", views.CustomToken.as_view(), name="token-login"),
     # token
     path("token/logout/", views.LogoutView.as_view(), name="token-logout"),
-    path("token/login/", views.CurstomToken.as_view(), name="token-login"),
     # password change API
     path(
         "password-change/",
@@ -43,5 +42,4 @@ urlpatterns = [
         name="resend-activation",
     ),
     # test mail
-    path("test-mail/", views.TestEmailView.as_view(), name="test-mail"),
 ]

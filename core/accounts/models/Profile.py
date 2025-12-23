@@ -7,10 +7,10 @@ from .Users import User
 
 class Profile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=250)
-    last_name = models.CharField(max_length=250)
+    first_name = models.CharField(max_length=250, blank=True, default='')
+    last_name = models.CharField(max_length=250, blank=True, default='')
     image = models.ImageField(blank=True, null=True)
-    description = models.TextField()
+    description = models.TextField(blank=True, default='')
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 

@@ -39,6 +39,7 @@ ENV/
 # Docker (only ignore these)
 *.env.docker
 docker-compose.yml
+.devcontainer/
 
 # OS
 .DS_Store
@@ -48,3 +49,6 @@ Thumbs.db
 htmlcov/
 .coverage
 .coverage.*
+
+# Flake8
+.flake8

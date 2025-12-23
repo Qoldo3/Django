@@ -9,7 +9,7 @@ class PostAdmin(admin.ModelAdmin):
         "status",
         "category",
         "created_date",
-        " published_date",
+        "published_date",
     ]
 
 
