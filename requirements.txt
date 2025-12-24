@@ -3,14 +3,16 @@ django
 python-decouple
 Pillow
 djangorestframework
+psycopg2
+django-mail-templated
+djoser
+
+
 
 # third-party packages
 markdown
 django-filter
 djangorestframework-simplejwt
-mail-templated
-# Requirements for documentation
-yasg[validation]
 
 # Requirements for Deployment
 
@@ -18,8 +20,8 @@ yasg[validation]
 #refactoring 
 flake8
 flake8-django
-flake8-bugbear
 
 # test
 pytest
 pytest-django
+drf_spectacular

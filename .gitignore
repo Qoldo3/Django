@@ -9,6 +9,8 @@ db.sqlite3
 db.sqlite3-journal
 core/media/
 staticfiles/
+core/.env
+core/backup.json
 
 # Environment variables
 .env
@@ -38,9 +40,9 @@ ENV/
 
 # Docker (only ignore these)
 *.env.docker
-docker-compose.yml
 .devcontainer/
-
+docker-compose.yml
+Dockerfile
 # OS
 .DS_Store
 Thumbs.db
@@ -52,3 +54,4 @@ htmlcov/
 
 # Flake8
 .flake8
+

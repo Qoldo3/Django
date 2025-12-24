@@ -72,9 +72,13 @@ WSGI_APPLICATION = "core.wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME', default='blog_db'),
+        'USER': config('DB_USER', default='blog_user'),
+        'PASSWORD': config('DB_PASSWORD', default='blog_password'),
+        'HOST': config('DB_HOST', default='localhost'),  # 'db' in Docker, 'localhost' locally
+        'PORT': config('DB_PORT', default='5432'),
     }
 }
 
