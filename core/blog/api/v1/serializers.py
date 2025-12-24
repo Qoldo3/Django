@@ -7,7 +7,7 @@ from accounts.models import Profile
 class PostSerializer(serializers.ModelSerializer):
     # Post Serializer with custom representation and creation logic
     snippet = serializers.CharField(source="get_snippet", read_only=True)
-    absolute_url = serializers.SerializerMethodField()
+    absolute_url = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Post

@@ -1,6 +1,6 @@
 from .serializers import PostSerializer, CategorySerializer
 from blog.models import Post, Category
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework import viewsets
 from .permissions import IsAuthorOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
@@ -22,6 +22,8 @@ class PostViewSet(viewsets.ModelViewSet):
     ]
     search_fields = ["title", "content"]
     ordering_fields = ["created_date", "updated_date"]
+
+
 
 
 class CategoryViewSet(viewsets.ModelViewSet):

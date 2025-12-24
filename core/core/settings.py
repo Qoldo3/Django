@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "django_filters",
-    "drf_yasg",
+    "drf_spectacular",
     "rest_framework_simplejwt",
     "mail_templated",
     "rest_framework_simplejwt.token_blacklist",
@@ -133,7 +133,7 @@ AUTH_USER_MODEL = "accounts.User"
 # Rest Settings
 
 REST_FRAMEWORK = {
-    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.openapi.AutoSchema',
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
         "rest_framework.authentication.SessionAuthentication",
@@ -174,4 +174,10 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": True,  # 👈 Security improvement
     "BLACKLIST_AFTER_ROTATION": True,  # 👈 Prevent token reuse
     "AUTH_HEADER_TYPES": ("Bearer",),
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Blog API",
+    "DESCRIPTION": "API documentation for the Blog application",
+    "VERSION": "v1",
 }
