@@ -172,5 +172,5 @@ class TestJWTLoginAPI:
             url, {"email": unverified.email, "password": "testpass123"}
         )
 
-        assert response.status_code == 400
+        assert response.status_code == 401
         assert "not verified" in str(response.data).lower()
