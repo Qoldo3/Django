@@ -7,14 +7,31 @@ on:
     branches: [ "main" ]
 
 jobs:
-
-  build:
-
+  test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Docker Compsoe
-      run: docker compose up -d
-    - name: Run Tests
-      run: docker compose exec backend sh -c "pytest ."
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build and start services
+        run: docker compose up -d --build
+
+      - name: Wait for database to be ready
+        run: |
+          docker compose exec -T db sh -c '
+            until pg_isready -U blog_user -d blog_db; do
+              echo "Waiting for database..."
+              sleep 2
+            done
+          '
+
+      - name: Run migrations
+        run: docker compose exec -T backend python manage.py migrate
+
+      - name: Run tests
+        run: docker compose exec -T backend pytest -v
+
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v
