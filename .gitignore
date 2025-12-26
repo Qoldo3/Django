@@ -41,8 +41,7 @@ ENV/
 # Docker (only ignore these)
 *.env.docker
 .devcontainer/
-docker-compose.yml
-Dockerfile
+
 # OS
 .DS_Store
 Thumbs.db
@@ -54,4 +53,4 @@ htmlcov/
 
 # Flake8
 .flake8
-
+*.yml
