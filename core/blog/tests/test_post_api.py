@@ -174,3 +174,4 @@ class TestJWTLoginAPI:
 
         assert response.status_code == 400
         assert "not verified" in str(response.data).lower()
+        # dd
