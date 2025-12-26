@@ -137,7 +137,7 @@ AUTH_USER_MODEL = "accounts.User"
 # Rest Settings
 
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.openapi.AutoSchema',
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
         "rest_framework.authentication.SessionAuthentication",
@@ -184,4 +184,11 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "Blog API",
     "DESCRIPTION": "API documentation for the Blog application",
     "VERSION": "v1",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SWAGGER_UI_SETTINGS": {
+        "deepLinking": True,
+    },
+    "COMPONENT_SPLIT_REQUEST": True,
+    # Auto-generate schemas even for simple views
+    "SCHEMA_COERCE_PATH_PK": True,
 }

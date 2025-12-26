@@ -22,7 +22,8 @@ from .serializers import (
 from accounts.models import Profile, EmailVerificationToken, PasswordResetToken
 
 from rest_framework.authtoken.models import Token
-
+import logging
+logger = logging.getLogger(__name__)
 
 class RegisterView(generics.CreateAPIView):
     # User Registration View

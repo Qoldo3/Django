@@ -2,9 +2,8 @@ import threading
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
-
+import logging
+logger = logging.getLogger(__name__)
 
 class EmailThread(threading.Thread):
     def __init__(self, email_obj):
@@ -13,8 +12,9 @@ class EmailThread(threading.Thread):
 
     def run(self):
         try:
+            logger.info(f"Attempting to send email to: {self.email_obj.to}")
             self.email_obj.send()
+            logger.info(f"Email sent successfully to: {self.email_obj.to}")
         except Exception as e:
-            return Response(
-                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+            logger.error(f"Failed to send email: {str(e)}")
+            logger.exception(e)
