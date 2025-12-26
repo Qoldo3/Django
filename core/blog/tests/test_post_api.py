@@ -131,7 +131,7 @@ class TestPostCreateAPI:
         url = reverse("blog:api-v1:posts-list")
         response = authenticated_client.post(url, {}, format="json")
 
-        assert response.status_code == 200
+        assert response.status_code == 400
         assert "title" in response.data
         assert "content" in response.data
 
