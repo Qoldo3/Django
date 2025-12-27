@@ -22,6 +22,23 @@ class PostViewSet(viewsets.ModelViewSet):
     ]
     search_fields = ["title", "content"]
     ordering_fields = ["created_date", "updated_date"]
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        # Search
+        search = self.request.query_params.get('search', None)
+        if search:
+            queryset = queryset.filter(
+                Q(title__icontains=search) | 
+                Q(content__icontains=search)
+            )
+        
+        # Category filter
+        category = self.request.query_params.get('category', None)
+        if category:
+            queryset = queryset.filter(category__name=category)
+        
+        return queryset
 
 
 

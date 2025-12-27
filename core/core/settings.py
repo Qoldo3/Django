@@ -194,3 +194,8 @@ SPECTACULAR_SETTINGS = {
     # Auto-generate schemas even for simple views
     "SCHEMA_COERCE_PATH_PK": True,
 }
+
+
+FRONTEND_URL = "http://localhost:5173"
+
+CORS_ALLOW_ALL_ORIGINS = True

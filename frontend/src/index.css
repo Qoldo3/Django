@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary: #4f46e5; /* indigo-600 */
+}
+
+.dark {
+  color-scheme: dark;
+}
